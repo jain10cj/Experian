@@ -29,22 +29,25 @@ namespace ExperianService
         {
             var okta = Configuration.GetSection("Okta").Get<Okta>();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
-                        options.Authority = okta.Authority;      /*"https://dev-99934351.okta.com/oauth2/default";*/
-                        options.Audience = okta.Audience;        /*"api://default";*/
-                    });
-            //services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;
-            //    options.DefaultChallengeScheme = OktaDefaults.ApiAuthenticationScheme;
-            //    options.DefaultSignInScheme = OktaDefaults.ApiAuthenticationScheme;
-            //})
-            //.AddOktaWebApi(new OktaWebApiOptions()
-            //{
-            //    OktaDomain = Configuration["Okta:OktaDomain"],
-            //});
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //        .AddJwtBearer(options =>
+            //        {
+            //            options.Authority = okta.Authority;      /*"https://dev-99934351.okta.com/oauth2/default";*/
+            //            options.Audience = okta.Audience;        /*"api://default";*/
+            //        });
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;
+                options.DefaultChallengeScheme = OktaDefaults.ApiAuthenticationScheme;
+                options.DefaultSignInScheme = OktaDefaults.ApiAuthenticationScheme;
+            })
+            .AddOktaWebApi(new OktaWebApiOptions()
+            {
+                OktaDomain = Configuration["Okta:OktaDomain"],
+                Audience = okta.Audience,
+                ClientId=okta.ClientId,
+                AuthorizationServerId=okta.Authority
+        });
 
             services.AddAuthorization();
             services.AddControllers();
